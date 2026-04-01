@@ -10,7 +10,16 @@ const app = express()
 app.use(helmet())
 app.use(express.json())
 
-const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173'
+// Browsers send Origin without a trailing slash; strip it so CORS matches Render/Vercel URLs.
+function normalizeOrigin(url) {
+  return String(url || '')
+    .trim()
+    .replace(/\/+$/, '')
+}
+
+const frontendOrigin = normalizeOrigin(
+  process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+)
 app.use(
   cors({
     origin: frontendOrigin,
